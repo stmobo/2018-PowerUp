@@ -91,6 +91,35 @@ class SwerveDrive(object):
         for module, angle, speed in zip(self.modules, angles, speeds):
             module.apply_control_values(angle, speed)
 
+    def drive_angle_distance(self, angle, distance):
+        """
+        Drive the robot frame to a given angle/distance offset, relative to
+        the robot heading.
+
+        Args:
+            angle (number): The direction in radians to drive towards,
+                relative to the robot frame heading.
+            distance (number): The distance in ticks to drive to.
+        """
+
+        for module in self.modules:
+            module.set_steer_angle(angle)
+            module.set_drive_distance(distance)
+
+    def reset_drive_position(self):
+        for module in self.modules:
+            module.reset_drive_position()
+
+    def drive_err_within(self, distance):
+        """
+        Test whether all module drive wheels have closed loop error within
+        a specified distance. Good for checking if movements have completed.
+        """
+        for module in self.modules:
+            if module.drive_closed_loop_err() >= distance:
+                return False
+        return True
+
     def save_config_values(self):
         """
         Save configuration values for all modules within this swerve drive.
